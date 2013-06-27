@@ -1,0 +1,11 @@
+name = OOP Entity
+description = Defines an extended EntityFieldQuery
+package = OOP Entity
+core = 7.x
+
+files[] = oop_entity.module
+files[] = includes/oop_entity.item.inc
+files[] = includes/oop_entity.query.inc
+
+dependencies[] = entity
+dependencies[] = field_reader

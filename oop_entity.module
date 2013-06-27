@@ -1,0 +1,38 @@
+<?php
+/**
+ * Implement hook_menu(), just to intercept the request for this query_api.
+ */
+
+function oop_entity_menu() {
+	$items = array();
+
+	$items['admin/oop_entity'] = array(
+		'title' => 'OOP Entity Item',
+
+		'page callback' => 'oop_entity_admin',
+		'access arguments' => array('dashboard'),
+	);
+
+	$items['admin/oop_entity/item'] = array(
+		'title' => 'OOP Entity Item',
+
+		'file' => 'tests/oop_entity.item.test',
+		'page callback' => 'oop_entity_item_test',
+		'access arguments' => array('dashboard'),
+	);
+
+	$items['admin/oop_entity/query'] = array(
+		'title' => 'OOP Entity Query',
+
+		'file' => 'tests/oop_entity.query.test',
+		'page callback' => 'oop_entity_query_test',
+		'access arguments' => array('dashboard'),
+	);
+
+
+	return $items;
+}
+
+function oop_entity_admin() {
+	return 'admin/oop_entity/item, admin/oop_entity/query';
+}

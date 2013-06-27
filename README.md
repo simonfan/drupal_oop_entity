@@ -1,0 +1,1 @@
+An OOP for entities. Does everything.
