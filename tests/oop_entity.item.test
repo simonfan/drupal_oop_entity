@@ -10,7 +10,15 @@ function oop_entity_item_test() {
 		'properties' => array(
 			'title' => array('alias' => 'title'),
 			'nid' => array('alias' => 'id'),
-			'author' => array('alias' => 'author'),
+			'author' => array(
+				'alias' => 'author',
+				'requirements' => array(
+					'properties' => array(
+						'name' => array(),
+						'uid' => array()
+					),	
+				),
+			),
 		),
 		'fields' => array(
 			'field_related' => array(
@@ -37,6 +45,9 @@ function oop_entity_item_test() {
 
 	// function __construct($entity_type, $entity, $requirements)
 	$oop_entity_item = new Oop_EntityItem('node', $node, $requirements);
+
+
+
 
 	echo '<pre>';
 	$item = $oop_entity_item->export();

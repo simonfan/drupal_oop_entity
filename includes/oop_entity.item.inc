@@ -27,7 +27,13 @@ class Oop_EntityItem {
 	public $wrapper;
 
 	// the entity type properties name list
+	private $property_info;
 	private $property_name_list;
+
+
+	// the entity field name list
+	private $field_info;
+	private $field_name_list;
 
 	// requirements data
 	private $requirements;
@@ -38,16 +44,20 @@ class Oop_EntityItem {
 	private $item = array();
 
 
-	public function __construct($entity_type, $entity, $requirements = NULL) {
+	public function __construct($entity_type, $entity, $requirements = 'all') {
 		$this->entity = $entity;
+		$this->entity_type = $entity_type;
 
-
-		// build the wrapper
+		///////////////////////
+		// build the wrapper //
+		///////////////////////
 		$this->wrapper = entity_metadata_wrapper($entity_type, $entity);
 
-		// build the entity property list
-		$prop_info = entity_get_property_info( $entity_type );
-		$this->property_name_list = array_keys($prop_info);
+		////////////////////////////////////
+		// build the entity property list //
+		////////////////////////////////////
+		$this->property_info = entity_get_property_info( $entity_type );
+		$this->property_name_list = array_keys($this->property_info);
 
 		// only do reading if $requirements is set
 		if ($requirements) {
@@ -63,17 +73,24 @@ class Oop_EntityItem {
 	///////////////////////////////////
 	private function read($requirements) {
 		// $requirements is an array containing 2 keys: fields and properties
-		$this->get_properties( $requirements['properties'] );
-		$this->get_fields( $requirements['fields'] );
+		if (isset($requirements['properties'])) {
+			$this->get_properties( $requirements['properties'] );
+		}
+
+		if (isset($requirements['fields'])) {
+			$this->get_fields( $requirements['fields'] );
+		}
 	}
 
-	private function get_properties($requirements_properties = NULL) {
-		if ( empty($requirements_properties) ) { return false; }
+	private function get_properties($requirement_properties = FALSE) {
+		if ( empty($requirement_properties) ) { return false; }
 
 		// get the requirements properties for the entity
 		// and store them as public properties of the object
 
-		foreach ($requirements_properties as $property_name => $options) {
+		foreach ($requirement_properties as $property_name => $options) {
+			// $options must be an array
+			$options = is_array($options) ? $options : array();
 
 			// define a basic property value
 			$property_value = $this->wrapper->{$property_name}->value();
@@ -92,12 +109,12 @@ class Oop_EntityItem {
 		}
 	}
 
-	private function get_fields($fields_options = NULL) {
-		if ( empty($fields_options) ) { return false; }
+	private function get_fields($requirement_fields = FALSE) {
+		if ( empty($requirement_fields) ) { return false; }
 
 		// get the requirements fields for the entity and store 
 		// them in public properties of the new object.
-		foreach ($fields_options AS $field_name => $options) {
+		foreach ($requirement_fields AS $field_name => $options) {
 
 			$field_info = field_info_field($field_name);
 			$field_type = $field_info['type'];
@@ -196,4 +213,66 @@ class Oop_EntityItem {
 
 		return $this;
 	}
+	///////////////////////////////////
+	////////// WRITING ////////////////
+	///////////////////////////////////
+
+
+	///////////////////////////////////
+	//////////// INFO /////////////////
+	///////////////////////////////////
+	public function info($what) {
+
+		switch ($what) {
+			case 'property_info':
+				return $this->property_info;
+				break;
+
+			case 'properties':
+				return $this->property_name_list;
+				break;
+
+			case 'field_info':
+				if (empty($this->field_info)) {
+					$this->build_field_info();
+				}
+
+				return $this->field_info;
+				break;
+
+			case 'fields':
+				if (empty($this->field_name_list)) {
+					$this->build_field_info();
+				}
+
+				return $this->field_name_list;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}
+
+	private function build_field_info() {
+		/////////////////////////////
+		// build entity field list //
+		/////////////////////////////
+		$entity_info = entity_get_info($this->entity_type);
+
+		if (empty($entity_info['entity keys']['bundle'])) {
+			$entity_bundle = $this->entity_type;
+		} else {
+			$entity_bundle = $this->entity->{$entity_info['entity keys']['bundle']};
+		}
+
+
+		// build the entity field name list
+		// field_info_instances($entity_type = NULL, $bundle_name = NULL)
+		$this->field_info = field_info_instances($this->entity_type, $entity_bundle);
+		$this->field_name_list = array_keys($this->field_info);
+	}
+	///////////////////////////////////
+	//////////// INFO /////////////////
+	///////////////////////////////////
 }

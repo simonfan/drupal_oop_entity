@@ -3,5 +3,10 @@
  * Implements hook_%propname_property_read_alter
  */
 function oop_entity_author_property_read_alter(&$author, $options) {
-	$author = 'aasdas';
+	$requirements = ( isset($options['requirements']) ) ? $options['requirements'] : array();
+
+	$oop_entity_item = new Oop_EntityItem('user', $author, $requirements);
+	$item = $oop_entity_item->export();
+
+	$author = $item;
 }

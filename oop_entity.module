@@ -22,12 +22,17 @@ function oop_entity_menu() {
 	$items = array();
 
 	$items['admin/oop_entity'] = array(
-		'title' => 'OOP Entity Item',
+		'title' => 'OOP Entity Information page',
 
-		'page callback' => 'oop_entity_admin',
+		'page callback' => 'oop_entity_info_page',
 		'access arguments' => array('dashboard'),
 	);
 
+
+
+	//////////////////////////////////////
+	/////////// INFO PAGE ////////////////
+	//////////////////////////////////////
 	$items['admin/oop_entity/item'] = array(
 		'title' => 'OOP Entity Item',
 
@@ -53,7 +58,6 @@ function oop_entity_menu() {
 		'access arguments' => array('dashboard'),
 	);
 
-
 	$items['admin/oop_entity/query'] = array(
 		'title' => 'OOP Entity Query',
 
@@ -66,11 +70,29 @@ function oop_entity_menu() {
 	return $items;
 }
 
-function oop_entity_admin() {
+function oop_entity_info_page() {
+
+	$entity = isset($_GET['entity']) ? $_GET['entity'] : 'node';
+	$bundle = isset($_GET['bundle']) ? $_GET['bundle'] : FALSE;
+	$to_get = isset($_GET['to_get']) ? $_GET['to_get'] : 'properties';
+
 	echo '<pre>';
 
-	$var = entity_get_property_info('node');
+	switch ($to_get) {
+		case 'property_info':
+			$var = entity_get_property_info($entity);
+			break;
 
-	var_dump($var['properties']);
+		case 'properties':
+			$var = entity_get_property_info($entity);
+			$var = $var['properties'];
+			break;
+		
+		default:
+
+			break;
+	}
+
+	var_dump($var);
 	die();
 }

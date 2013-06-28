@@ -21,8 +21,12 @@
 */
 function oop_entity_entityreference_field_read_alter(&$entities, $options, $field_info) {
 
+	if (!isset($options['entity_type'])) {
+		throw new Exception("You must pass the entity type!", 1);
+	}
+
 	$entity_type = $options['entity_type'];
-	$requirements = $options['requirements'];
+	$requirements = isset($options['requirements']) ? $options['requirements'] : array();
 	
 	// the response
 	$RES = array();
