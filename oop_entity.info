@@ -8,4 +8,3 @@ files[] = includes/oop_entity.item.inc
 files[] = includes/oop_entity.query.inc
 
 dependencies[] = entity
-dependencies[] = field_reader

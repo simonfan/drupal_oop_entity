@@ -1,0 +1,7 @@
+<?php
+/**
+ * Implements hook_%propname_property_read_alter
+ */
+function oop_entity_author_property_read_alter(&$author, $options) {
+	$author = 'aasdas';
+}

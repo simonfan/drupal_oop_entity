@@ -1,0 +1,40 @@
+<?php
+/*
+	$options = array(
+		'styles' => array(),	// array of styles (defined in media configs)
+		'limit' => number or NULL  // how many results to retrieve
+	)
+*/
+function oop_entity_image_field_read_alter(&$images, $options, $field_info) {
+	// the styles to get
+	$styles = $options['styles'];
+
+	$RES = array();
+
+	// limit
+	$limit = (!empty($options['limit'])) ? $options['limit'] : 1;
+
+	// counter
+	$counter = 0;
+
+	foreach ($images as $image) {
+		if ($counter == $limit) { break; }
+
+		// build all image size requested.
+		foreach ($styles AS $style) {
+			$url = image_style_url($style, $image['uri']);
+
+			$RES[ $counter ][ $style ] = $url;
+		}
+
+		// build the url to the original image.
+		// this happens after all requested image styles are set,
+		// because this way, it can override another 'original' image style.
+		$RES[ $counter ]['original'] = file_create_url($image['uri']);
+
+		$counter++;
+	}
+
+	// if limit was 1, take the only image and set it as images
+	$images = ($limit === 1) ? $RES[0] : $RES;
+}

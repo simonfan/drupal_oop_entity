@@ -1,0 +1,33 @@
+<?php
+/**
+ * Implements hook_body_field_formatter
+ */
+function oop_entity_body_field_formatter(&$value, $options = array()) {
+	$type = gettype($value);
+
+	if ($type === 'string') {
+		$new_val = array();
+
+		$new_val['value'] = $value;
+
+		// summary
+		$summary_length = !empty($options['summary_length']) ? $options['summary_length'] : 100;
+		$new_val['summary'] = implode(' ', array_slice(explode(' ', $value), 0, $summary_length));
+
+		// format
+		$format = !empty($options['format']) ? $options['format'] : 'full_html';
+		$new_val['format'] = $format;
+
+		// set value as new value
+		$value = $new_val;
+
+	} else if (is_array($value)) {
+
+		if (!isset($value['value'])) {
+			throw new Exception("Body value not set!", 1);
+		}
+
+		// set the default format
+		$value['format'] = !empty($value['format']) ? $value['format'] : !empty($options['format']) ? $options['format'] : 'full_html';
+	}
+}

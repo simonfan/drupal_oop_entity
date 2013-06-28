@@ -1,0 +1,58 @@
+<?php
+/*
+
+	$options = array(
+		'alias' => 'related',
+		'entity_type' => 'node',
+		'entity_prop_aliases' => array('field_image' => 'IMAGES'),		// aliases for the properties and fields 
+		'limit' => 10,  // how many results to retrieve
+		'requirements' => array(
+			'properties' => array(
+				'title' => array(),
+				'nid' => array()
+			), 
+			'fields' => array(
+				'field_image' => array(
+					'styles' => array('thumbnail')
+				),
+			),	
+		),
+	),
+*/
+function oop_entity_entityreference_field_read_alter(&$entities, $options, $field_info) {
+
+	$entity_type = $options['entity_type'];
+	$requirements = $options['requirements'];
+	
+	// the response
+	$RES = array();
+
+	// limit
+	$limit = (!empty($options['limit'])) ? $options['limit'] : 1;
+
+	// counter
+	$counter = 0;
+
+	// qtty of entities
+	$value_count = count($entities);
+
+
+	foreach ($entities as $entity) {
+
+		//////// COUNTER ///////////
+		if ($counter === $limit) {
+			break;
+		}
+
+		// Oop_EntityItem($entity_type, $entity, $requirements = NULL)
+		$oop_entity_item = new Oop_EntityItem($entity_type, $entity, $requirements);
+		$item = $oop_entity_item->export();
+
+		array_push($RES, $item);
+
+		$counter++;
+	}
+
+	// if limit was 1, take the only image and set it as entities
+	$entities = ($limit === 1) ? array_shift($RES) : $RES;
+}

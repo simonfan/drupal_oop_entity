@@ -1,4 +1,19 @@
 <?php
+
+function oop_entity_require_all($path) {
+	// include all files from /formatters
+	foreach (scandir($path) as $filename) {
+	    $fpath = $path.'/'.$filename;
+	    if (is_file($fpath)) {
+	        require $fpath;
+	    }
+	}
+} 
+
+oop_entity_require_all(dirname(__FILE__).'/formatters');
+oop_entity_require_all(dirname(__FILE__).'/readers/field');
+oop_entity_require_all(dirname(__FILE__).'/readers/property');
+
 /**
  * Implement hook_menu(), just to intercept the request for this query_api.
  */
@@ -21,6 +36,24 @@ function oop_entity_menu() {
 		'access arguments' => array('dashboard'),
 	);
 
+
+	$items['admin/oop_entity/item/create'] = array(
+		'title' => 'OOP Entity item creation',
+
+		'file' => 'tests/oop_entity.item.create.test',
+		'page callback' => 'oop_entity_item_create_test',
+		'access arguments' => array('dashboard'),
+	);
+
+	$items['admin/oop_entity/item/update'] = array(
+		'title' => 'OOP Entity item update',
+
+		'file' => 'tests/oop_entity.item.update.test',
+		'page callback' => 'oop_entity_item_update_test',
+		'access arguments' => array('dashboard'),
+	);
+
+
 	$items['admin/oop_entity/query'] = array(
 		'title' => 'OOP Entity Query',
 
@@ -34,5 +67,10 @@ function oop_entity_menu() {
 }
 
 function oop_entity_admin() {
-	return 'admin/oop_entity/item, admin/oop_entity/query';
+	echo '<pre>';
+
+	$var = entity_get_property_info('node');
+
+	var_dump($var['properties']);
+	die();
 }
