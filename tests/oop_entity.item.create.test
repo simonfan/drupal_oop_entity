@@ -18,13 +18,7 @@ function oop_entity_item_create_test() {
 
 	$save_status = $oop_entity->save();
 
-	var_dump($save_status);
-	die();
-
 	if ($save_status) {
-
-
-
 		drupal_set_message(
 			t('Entity @title was successfully created.',array('@title' => $wrapper->title->value()) )
 		);

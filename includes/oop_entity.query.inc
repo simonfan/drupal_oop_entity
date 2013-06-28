@@ -19,8 +19,7 @@ class Oop_EntityQuery extends EntityFieldQuery {
 	/*
 		$options = array(
 			'entity_type' => 'string',
-			'id_field_value' => 'string',
-			'required' => array(),				// object to be passed on to the rest.item
+			'requirements' => array(),				// object to be passed on to the rest.item
 			'start' => 0,
 			'length' => 30
 		);
@@ -36,8 +35,6 @@ class Oop_EntityQuery extends EntityFieldQuery {
 		$this
 			// entity type
 			->entityCondition('entity_type', $options['entity_type'])
-			// Default to published
-			->propertyCondition('status', 1)
 			// define a default range for the query
 			// starting at 0 and ending in 20
 			->range( $start , $length );
@@ -51,13 +48,13 @@ class Oop_EntityQuery extends EntityFieldQuery {
 		$entity_type = $this->options['entity_type'];
 
 		// get the requirement object
-		$requirements = $this->options['required'];
+		$requirements = $this->options['requirements'];
 
 		// call parent "execute()" method.
 		$this->efq_result = parent::execute();
 
 		// with the response of the parent execute query, 
-		// extract required fields.
+		// extract requirements fields.
 		if ( !empty( $this->efq_result[ $entity_type ] ) ) {
 			// if there are any results,
 
