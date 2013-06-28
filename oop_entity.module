@@ -93,6 +93,8 @@ function oop_entity_info_page() {
 			break;
 	}
 
+	$var = field_info_instances();
+
 	var_dump($var);
 	die();
 }

@@ -5,7 +5,14 @@
 function oop_entity_author_property_read_alter(&$author, $options) {
 	$requirements = ( isset($options['requirements']) ) ? $options['requirements'] : array();
 
-	$oop_entity_item = new Oop_EntityItem('user', $author, $requirements);
+	$item_data = array(
+		'entity' => $author,
+		'entity_type' => 'user',
+		// 'entity_bundle' => 
+		'requirements' => $requirements,
+	);
+
+	$oop_entity_item = new Oop_EntityItem($item_data);
 	$item = $oop_entity_item->export();
 
 	$author = $item;

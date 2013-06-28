@@ -44,24 +44,34 @@ class Oop_EntityItem {
 	private $item = array();
 
 
-	public function __construct($entity_type, $entity, $requirements = 'all') {
-		$this->entity = $entity;
-		$this->entity_type = $entity_type;
+	public function __construct($data) {
+		/*
+			$data = array(
+				$entity => object,
+				$entity_type => string,
+				$entity_bundle => string,
+				$requirements => array
+			);
+		*/
+		$this->entity = isset($data['entity']) ? $data['entity'] : FALSE;
+		$this->entity_type = isset($data['entity_type']) ? $data['entity_type'] : FALSE;
+		$this->entity_bundle = isset($data['entity_bundle']) ? $data['entity_bundle'] : FALSE;
+		$this->requirements = isset($data['requirements']) ? $data['requirements'] : array();
 
 		///////////////////////
 		// build the wrapper //
 		///////////////////////
-		$this->wrapper = entity_metadata_wrapper($entity_type, $entity);
+		$this->wrapper = entity_metadata_wrapper($data['entity_type'], $data['entity']);
 
 		////////////////////////////////////
 		// build the entity property list //
 		////////////////////////////////////
-		$this->property_info = entity_get_property_info( $entity_type );
-		$this->property_name_list = array_keys($this->property_info);
+		$this->property_info = entity_get_property_info( $data['entity_type'] );
+		$this->property_name_list = array_keys($this->property_info['properties']);
 
 		// only do reading if $requirements is set
-		if ($requirements) {
-			$this->read($requirements);
+		if (!empty($data['requirements'])) {
+			$this->read($data['requirements']);
 		}
 	}
 
@@ -258,18 +268,20 @@ class Oop_EntityItem {
 		/////////////////////////////
 		// build entity field list //
 		/////////////////////////////
-		$entity_info = entity_get_info($this->entity_type);
+		if (empty($this->entity_bundle)) {
+			$entity_info = entity_get_info($this->entity_type);
 
-		if (empty($entity_info['entity keys']['bundle'])) {
-			$entity_bundle = $this->entity_type;
-		} else {
-			$entity_bundle = $this->entity->{$entity_info['entity keys']['bundle']};
+			if (empty($entity_info['entity keys']['bundle'])) {
+				$this->entity_bundle = $this->entity_type;
+			} else {
+				$this->entity_bundle = $this->entity->{$entity_info['entity keys']['bundle']};
+			}
 		}
 
 
 		// build the entity field name list
 		// field_info_instances($entity_type = NULL, $bundle_name = NULL)
-		$this->field_info = field_info_instances($this->entity_type, $entity_bundle);
+		$this->field_info = field_info_instances($this->entity_type, $this->entity_bundle);
 		$this->field_name_list = array_keys($this->field_info);
 	}
 	///////////////////////////////////

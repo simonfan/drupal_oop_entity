@@ -1,9 +1,6 @@
 <?php
 
 function oop_entity_item_test() {
-	$node = entity_load('node', array(1));
-
-	$node = array_shift($node);
 
 
 	$requirements = array(
@@ -43,8 +40,19 @@ function oop_entity_item_test() {
 		),
 	);
 
+	$node = entity_load('node', array(1));
+
+	$node = array_shift($node);
+
+	$item_data = array(
+		'entity' => $node,
+		'entity_type' => 'node',
+		'entity_bundle' => 'article',
+		'requirements' => $requirements,
+	);
+
 	// function __construct($entity_type, $entity, $requirements)
-	$oop_entity_item = new Oop_EntityItem('node', $node, $requirements);
+	$oop_entity_item = new Oop_EntityItem($item_data);
 
 
 

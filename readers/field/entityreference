@@ -48,8 +48,15 @@ function oop_entity_entityreference_field_read_alter(&$entities, $options, $fiel
 			break;
 		}
 
-		// Oop_EntityItem($entity_type, $entity, $requirements = NULL)
-		$oop_entity_item = new Oop_EntityItem($entity_type, $entity, $requirements);
+		$item_data = array(
+			'entity' => $entity,
+			'entity_type' => $entity_type,
+			// 'entity_bundle' => 
+			'requirements' => $requirements,
+		);
+
+		// Oop_EntityItem($item_data)
+		$oop_entity_item = new Oop_EntityItem($item_data);
 		$item = $oop_entity_item->export();
 
 		array_push($RES, $item);
