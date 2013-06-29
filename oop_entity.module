@@ -72,28 +72,43 @@ function oop_entity_menu() {
 
 function oop_entity_info_page() {
 
-	$entity = isset($_GET['entity']) ? $_GET['entity'] : 'node';
+	$type = isset($_GET['type']) ? $_GET['type'] : 'node';
 	$bundle = isset($_GET['bundle']) ? $_GET['bundle'] : FALSE;
 	$to_get = isset($_GET['to_get']) ? $_GET['to_get'] : 'properties';
+
+
+	$item_data = array(
+	//	'entity' => ,
+		'entity_type' => $type,
+		'entity_bundle' => $bundle,
+	//	'requirements' => 
+	);
+
+	$oop_entity = new Oop_EntityItem($item_data);
 
 	echo '<pre>';
 
 	switch ($to_get) {
 		case 'property_info':
-			$var = entity_get_property_info($entity);
+			$var = $oop_entity->info('property_info');
 			break;
 
 		case 'properties':
-			$var = entity_get_property_info($entity);
-			$var = $var['properties'];
+			$var = $oop_entity->info('properties');
 			break;
-		
+
+		case 'fields':
+			$var = $oop_entity->info('fields');
+			break;
+
+		case 'field_info':
+			$var = $oop_entity->info('field_info');
+			break;
+
 		default:
 
 			break;
 	}
-
-	$var = field_info_instances();
 
 	var_dump($var);
 	die();

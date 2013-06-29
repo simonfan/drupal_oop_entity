@@ -7,12 +7,12 @@ function oop_entity_query_test() {
 		$options = array(
 			'entity_type' => 'string',
 			'id_field_value' => 'string',
-			'required' => array(),				// object to be passed on to the rest.item
+			'requirements' => array(),				// object to be passed on to the rest.item
 			'length' => 30
 		);
 	*/
 
-	$required = array(
+	$requirements = array(
 		'properties' => array(
 			'title' => array('alias' => 'title'),
 			'nid' => array('alias' => 'id')
@@ -43,7 +43,7 @@ function oop_entity_query_test() {
 	$options = array(
 		'entity_type' => 'node',
 		'id_field_value' => 'nid',
-		'required' => $required,
+		'requirements' => $requirements,
 		'length' => 30,
 	);
 

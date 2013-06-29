@@ -65,7 +65,15 @@ class Oop_EntityQuery extends EntityFieldQuery {
 
 			foreach ($entities AS $entity) {
 
-				$item = new Oop_EntityItem($entity_type, $entity, $requirements);
+
+				$item_data = array(
+					'entity' => $entity,
+					'entity_type' => $entity_type,
+				//	'entity_bundle' => ,
+					'requirements' => $requirements,
+				);
+
+				$item = new Oop_EntityItem($item_data);
 				$item = $item->export();
 
 				// add the item to the items array

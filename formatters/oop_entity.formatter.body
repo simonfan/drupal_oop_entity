@@ -1,8 +1,27 @@
 <?php
 /**
+ * This formatter is a bit different!
+ * It has to work for both FIELD AND PROPERTY
+ * THUS IMPLEMENT BOTH HOOKS
+ */
+
+/**
  * Implements hook_body_field_formatter
  */
 function oop_entity_body_field_formatter(&$value, $options = array()) {
+	return oop_entity_body_formatter($value, $options);
+}
+
+/**
+ * Implements hook_body_property_formatter
+ */
+function oop_entity_body_property_formatter(&$value, $options = array()) {
+	return oop_entity_body_formatter($value, $options);
+}
+
+
+////// FORMATTER ! /////
+function oop_entity_body_formatter(&$value, $options = array()) {
 	$type = gettype($value);
 
 	if ($type === 'string') {
@@ -31,3 +50,6 @@ function oop_entity_body_field_formatter(&$value, $options = array()) {
 		$value['format'] = !empty($value['format']) ? $value['format'] : !empty($options['format']) ? $options['format'] : 'full_html';
 	}
 }
+
+
+

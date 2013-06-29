@@ -8,8 +8,15 @@ function oop_entity_item_create_test() {
 	// entity_metadata_wrapper($type, $data = NULL, array $info = array())
 	$entity = entity_create('node', array( 'type' => 'article' ));
 
+	$item_data = array(
+		'entity' => $entity,
+		'entity_type' => 'node',
+		'entity_bundle' => 'article',
+		// 'requirements' => 
+	);
+
 	// new Oop_EntityItem($entity_type, $entity, $required = NULL)
-	$oop_entity = new Oop_EntityItem('node', $entity);
+	$oop_entity = new Oop_EntityItem($item_data);
 
 	// set values
 	$oop_entity
@@ -20,11 +27,11 @@ function oop_entity_item_create_test() {
 
 	if ($save_status) {
 		drupal_set_message(
-			t('Entity @title was successfully created.',array('@title' => $wrapper->title->value()) )
+			t('Entity @title was successfully created.',array('@title' => $oop_entity->title->value()) )
 		);
 	} else {
 		drupal_set_message(
-			t('Entity @title was not created.',array('@title' => $wrapper->title->value()), 'error' )
+			t('Entity @title was not created.',array('@title' => $oop_entity->title->value()), 'error' )
 		);
 	}
 	// entity_uri($entity_type, $entity)

@@ -53,25 +53,26 @@ class Oop_EntityItem {
 				$requirements => array
 			);
 		*/
-		$this->entity = isset($data['entity']) ? $data['entity'] : FALSE;
-		$this->entity_type = isset($data['entity_type']) ? $data['entity_type'] : FALSE;
-		$this->entity_bundle = isset($data['entity_bundle']) ? $data['entity_bundle'] : FALSE;
+
+		$this->entity = isset($data['entity']) ? $data['entity'] : NULL;
+		$this->entity_type = isset($data['entity_type']) ? $data['entity_type'] : NULL;
+		$this->entity_bundle = isset($data['entity_bundle']) ? $data['entity_bundle'] : NULL;
 		$this->requirements = isset($data['requirements']) ? $data['requirements'] : array();
 
 		///////////////////////
 		// build the wrapper //
 		///////////////////////
-		$this->wrapper = entity_metadata_wrapper($data['entity_type'], $data['entity']);
+		$this->wrapper = entity_metadata_wrapper($this->entity_type, $this->entity);
 
 		////////////////////////////////////
 		// build the entity property list //
 		////////////////////////////////////
-		$this->property_info = entity_get_property_info( $data['entity_type'] );
+		$this->property_info = entity_get_property_info( $this->entity_type );
 		$this->property_name_list = array_keys($this->property_info['properties']);
 
 		// only do reading if $requirements is set
-		if (!empty($data['requirements'])) {
-			$this->read($data['requirements']);
+		if (!empty($this->requirements)) {
+			$this->read($this->requirements);
 		}
 	}
 
@@ -217,7 +218,7 @@ class Oop_EntityItem {
 			// the field requires a list but the $value is a single valyue single
 			$value = array($value);
 		}
-
+		
 		// set
 		$this->wrapper->{$name}->set($value);
 
