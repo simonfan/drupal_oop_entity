@@ -71,7 +71,7 @@ class Oop_EntityItem {
 		$this->property_name_list = array_keys($this->property_info['properties']);
 
 		// only do reading if $requirements is set
-		if (!empty($this->requirements)) {
+		if (!empty($this->requirements) && !empty($this->entity)) {
 			$this->read($this->requirements);
 		}
 	}
@@ -82,7 +82,11 @@ class Oop_EntityItem {
 	///////////////////////////////////
 	////////// READING ////////////////
 	///////////////////////////////////
-	private function read($requirements) {
+	public function read($requirements = FALSE) {
+		if (empty($requirements)) {
+			$requirements = $this->requirements;
+		}
+
 		// $requirements is an array containing 2 keys: fields and properties
 		if (isset($requirements['properties'])) {
 			$this->get_properties( $requirements['properties'] );
@@ -221,6 +225,10 @@ class Oop_EntityItem {
 		
 		// set
 		$this->wrapper->{$name}->set($value);
+
+
+		// after data is set, the object must be updated
+		$this->read($this->requirements);
 
 		return $this;
 	}

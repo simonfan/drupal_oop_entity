@@ -19,6 +19,7 @@ class Oop_EntityQuery extends EntityFieldQuery {
 	/*
 		$options = array(
 			'entity_type' => 'string',
+			'entity_bundle' => 'string',
 			'requirements' => array(),				// object to be passed on to the rest.item
 			'start' => 0,
 			'length' => 30
@@ -34,10 +35,14 @@ class Oop_EntityQuery extends EntityFieldQuery {
 
 		$this
 			// entity type
-			->entityCondition('entity_type', $options['entity_type'])
+			->entityCondition('entity_type', $options['entity_type'], '=')
 			// define a default range for the query
 			// starting at 0 and ending in 20
 			->range( $start , $length );
+
+		if (isset($options['entity_bundle'])) {
+			$this->entityCondition('bundle', $options['entity_bundle'], '=');
+		}
 	}
 
 	/**
