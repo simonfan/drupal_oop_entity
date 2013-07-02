@@ -8,20 +8,20 @@
 /**
  * Implements hook_body_field_formatter
  */
-function oop_entity_body_field_formatter(&$value, $options = array()) {
+function oop_entity_body_field_formatter($value, $options = array()) {
 	return oop_entity_body_formatter($value, $options);
 }
 
 /**
  * Implements hook_body_property_formatter
  */
-function oop_entity_body_property_formatter(&$value, $options = array()) {
+function oop_entity_body_property_formatter($value, $options = array()) {
 	return oop_entity_body_formatter($value, $options);
 }
 
 
 ////// FORMATTER ! /////
-function oop_entity_body_formatter(&$value, $options = array()) {
+function oop_entity_body_formatter($value, $options = array()) {
 	$type = gettype($value);
 
 	if ($type === 'string') {
@@ -49,6 +49,8 @@ function oop_entity_body_formatter(&$value, $options = array()) {
 		// set the default format
 		$value['format'] = !empty($value['format']) ? $value['format'] : !empty($options['format']) ? $options['format'] : 'full_html';
 	}
+
+	return $value;
 }
 
 

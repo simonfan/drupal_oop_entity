@@ -1,0 +1,49 @@
+<?php
+/*
+ * Implements hook_taxonomy_term_reference_field_formatter
+ */
+function oop_entity_taxonomy_term_reference_field_formatter($value, $options, $field_info) {
+	// value may either be the entity id or the entity title value
+
+	if (isset($value)) {
+
+		// first try loading by tid
+		$term_load_by_tid = taxonomy_term_load($value);
+
+		// if any term was successfully loaded by id,
+		// the $tid to be referred to is the $value
+		if ( isset($term_load_by_tid) && $term_load_by_tid ) {
+
+			$ref_id = $value;
+
+		} else {
+
+			// try loading the term by name
+			$term_load_by_name = taxonomy_get_term_by_name($value);
+
+			if ( count($term_load_by_name) > 0 ) {
+				$term_keys = array_keys($term_load_by_name);
+
+				if (count($term_keys) > 1) {
+					$ref_id = $term_keys;
+				} else {
+					$ref_id = array_shift($term_keys);
+				}	
+
+			} else {
+				$ref_id = NULL;
+			}
+
+		}
+
+
+		if ( isset($ref_id) && $ref_id !== NULL) {
+			return intval($ref_id);
+		} else {
+			return NULL;
+		}
+
+	} else {
+		return NULL;
+	}
+}

@@ -54,10 +54,33 @@ class Oop_EntityItem {
 			);
 		*/
 
-		$this->entity = isset($data['entity']) ? $data['entity'] : NULL;
 		$this->entity_type = isset($data['entity_type']) ? $data['entity_type'] : NULL;
 		$this->entity_bundle = isset($data['entity_bundle']) ? $data['entity_bundle'] : NULL;
 		$this->requirements = isset($data['requirements']) ? $data['requirements'] : array();
+
+
+
+		/////////////////////
+		//// BUILD ENTITY ///
+		/////////////////////
+		if (!empty($data['entity'])) {
+			$this->entity = $data['entity'];
+		} else {
+			// data used to create the entity
+			$entity_data = array();
+
+			// discover the key to the entitty bundle value
+			$entity_info = entity_get_info($this->entity_type);
+
+			if (!empty($entity_info['entity keys']['bundle']) && !empty($this->entity_bundle)) {
+				$entity_data[ $entity_info['entity keys']['bundle'] ] = $this->entity_bundle;
+			}
+
+			$this->entity = entity_create($this->entity_type, $entity_data);
+		}
+		/////////////////////
+		//// BUILD ENTITY ///
+		/////////////////////
 
 		///////////////////////
 		// build the wrapper //
@@ -183,27 +206,55 @@ class Oop_EntityItem {
 			$cardinality = 1;
 		}
 
+
+		//////////////////////////
+		/////// SINGLE OR NOT ////
+		//////////////////////////
+		$field_is_single = $cardinality == 1;
+		$value_is_single = is_array($value) ? array_values($value) !== $value : TRUE;
+		$options['field_is_single'] = $field_is_single;
+		$options['value_is_single'] = $value_is_single;
+
 		/////////////////////////////////
 		////// DATA ALTERING HOOK ///////
 		/////////////////////////////////
-		$hook_suffix = ($is_property) ? '_property_formatter' : '_field_formatter';
-
-		// define %method_%endpoint_data_alter hook
-		$data_alter_hook_name =  $name . $hook_suffix;
+		// define _data_alter hook
+		$data_alter_hook_name = ($is_property) ? $name.'_property_formatter' : $field_info['type'].'_field_formatter';
 
 		// @see user_module_invoke()
 		foreach (module_implements($data_alter_hook_name) as $module) {
-			$function = $module .'_'. $data_alter_hook_name;
+			$alter_function = $module .'_'. $data_alter_hook_name;
 			// will call all modules implementing hook_hook_name
 			// and can pass each argument as reference determined
 			// by the function declaration
 
-			if ($is_property) {
-				$function($value, $options);
+
+			// if the value is a list of values, iterate over the list
+			if (!$value_is_single) {
+
+				$value_list = $value;
+				$value = array();
+
+				// iterate over value list
+				foreach ($value_list as $v) {
+					if ($is_property) {
+						$v = $alter_function($v, $options);
+					} else {
+						$v = $alter_function($v, $options, $field_info);
+					}
+
+					array_push($value, $v);
+				}
+
 			} else {
-				$function($value, $options, $field_info);
+				if ($is_property) {
+					$value = $alter_function($value, $options);
+				} else {
+					$value = $alter_function($value, $options, $field_info);
+				}
 			}
 		}
+
 		/////////////////////////////////
 		////// DATA ALTERING HOOK ///////
 		/////////////////////////////////
@@ -212,19 +263,19 @@ class Oop_EntityItem {
 		/////////////////////////////////
 		////////// SET! /////////////////
 		/////////////////////////////////
-		$field_is_single = $cardinality == 1;
-		$value_is_single = is_array($value) ? array_values($value) !== $value : TRUE;
-
-		if ($field_is_single && !$value_is_single) {
-			// the field requires a single value, so just get the first value from the valuelist
-			$value = array_shift($value);
-		} else if (!$field_is_single && $value_is_single) {
-			// the field requires a list but the $value is a single valyue single
-			$value = array($value);
+		// only set if the value is not NULL
+		if (!is_null($value)) {
+			if ($field_is_single && !$value_is_single) {
+				// the field requires a single value, so just get the first value from the valuelist
+				$value = array_shift($value);
+			} else if (!$field_is_single && $value_is_single) {
+				// the field requires a list but the $value is a single valyue single
+				$value = array($value);
+			}
+			
+			// set
+			$this->wrapper->{$name}->set($value);			
 		}
-		
-		// set
-		$this->wrapper->{$name}->set($value);
 
 
 		// after data is set, the object must be updated

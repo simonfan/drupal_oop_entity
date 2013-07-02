@@ -1,8 +1,8 @@
 <?php
 /**
- * Implements hook_field_image_field_formatter
+ * Implements hook_image_field_formatter
  */
-function oop_entity_field_image_field_formatter(&$value, $options = array()) {
+function oop_entity_image_field_formatter($value, $options = array(), $field_info) {
 
 	$typeof_value = gettype($value);
 
@@ -11,8 +11,6 @@ function oop_entity_field_image_field_formatter(&$value, $options = array()) {
 		// if no temp_file_base_path is set, assume the value is the whole path to the file.
 		$temp_file_path = isset($options['temp_file_base_path']) ? $options['temp_file_base_path'] .'/'. $value : $value;
 		$temp_file_exists = file_exists($temp_file_path);
-
-
 
 		if ($temp_file_path && $temp_file_exists) {
 			// Create managed File object and associate with Image field.
@@ -32,7 +30,9 @@ function oop_entity_field_image_field_formatter(&$value, $options = array()) {
 
 		} else {
 			drupal_set_message('File '. $temp_file_path . ' does not exist. It was not uploaded.');
-			$value = FALSE;
+
+			// set the value to null, so that the oop_entity_item does not set it.
+			$value = NULL;
 		}
 
 	} else if ($typeof_value == 'array') {
@@ -40,4 +40,6 @@ function oop_entity_field_image_field_formatter(&$value, $options = array()) {
 	} else if ($typeof_value == 'object') {
 		$value = (array) $value;
 	}
+
+	return $value;
 }

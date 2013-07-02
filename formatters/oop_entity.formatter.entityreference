@@ -1,0 +1,59 @@
+<?php
+/*
+ * Implements hook_entityreference_field_formatter
+ */
+function oop_entity_entityreference_field_formatter($value, $options, $field_info) {
+	// value may either be the entity id or the entity title value
+
+	// first get the referenced entity type.
+	$entity_type = $field_info['settings']['target_type'];
+
+	if (isset($value)) {
+
+		// first try loading by entity id
+		$entity_load_by_id = entity_load($entity_type, array($value));
+
+		// if any entity was successfully loaded by id,
+		// the $target_id is equal to the $value var.
+		if ( count($entity_load_by_id) > 0 ) {
+			$target_id = $value;
+		} else {
+
+			// try finding the entity by title
+			$query = new EntityFieldQuery();
+
+			$query->entityCondition('entity_type', $entity_type)
+				->propertyCondition('title', $value);
+
+			$results = $query->execute();
+			// the pseudo-entity objects are within an array keyed by the entity type.
+			$results = isset( $results[$entity_type] ) ? $results[$entity_type] : NULL ;
+
+			if ( isset($results) && count($results) > 0) {
+				// as we only expect one entity to be found with this value,
+				// just get the first entity.
+				$result_keys = array_keys($results);
+
+				if (count($result_keys) > 1) {
+					$target_id = $result_keys;
+				} else {
+					$target_id = array_shift($result_keys);
+				}
+
+			} else {
+				$target_id = NULL;
+			}
+
+		}
+
+		// if there is a $target_id, make sure it is an int.
+		if (isset($target_id) && $target_id != '') {
+			return intval($target_id);
+		} else {
+			return NULL;
+		}
+
+	} else {
+		return NULL;	
+	}
+}
