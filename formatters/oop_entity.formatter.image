@@ -1,0 +1,43 @@
+<?php
+/**
+ * Implements hook_field_image_field_formatter
+ */
+function oop_entity_field_image_field_formatter(&$value, $options = array()) {
+
+	$typeof_value = gettype($value);
+
+	// if $value is a string, assume it is the filename or the file path
+	if ($typeof_value == 'string') {
+		// if no temp_file_base_path is set, assume the value is the whole path to the file.
+		$temp_file_path = isset($options['temp_file_base_path']) ? $options['temp_file_base_path'] .'/'. $value : $value;
+		$temp_file_exists = file_exists($temp_file_path);
+
+
+
+		if ($temp_file_path && $temp_file_exists) {
+			// Create managed File object and associate with Image field.
+			$file = (object) array(
+				'uid' => 1,
+				'uri' => $temp_file_path,
+				'filemime' => file_get_mimetype($temp_file_path),
+				'status' => 1,
+				'display' => 1,
+			);
+
+			// We save the file to the root of the files directory.
+			// file_copy(stdClass $source, $destination = NULL, $replace = FILE_EXISTS_RENAME)
+			$file = file_copy($file, 'public://', FILE_EXISTS_REPLACE);
+
+			$value = (array) $file;
+
+		} else {
+			drupal_set_message('File '. $temp_file_path . ' does not exist. It was not uploaded.');
+			$value = FALSE;
+		}
+
+	} else if ($typeof_value == 'array') {
+		$value = $value;
+	} else if ($typeof_value == 'object') {
+		$value = (array) $value;
+	}
+}
