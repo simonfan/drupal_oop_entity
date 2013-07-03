@@ -34,11 +34,7 @@ function oop_entity_entityreference_field_formatter($value, $options, $field_inf
 				// just get the first entity.
 				$result_keys = array_keys($results);
 
-				if (count($result_keys) === 1) {
-					$target_id = $result_keys;
-				} else {
-					$target_id = array_shift($result_keys);
-				}
+				$target_id = array_shift($result_keys);
 
 			} else {
 				$target_id = NULL;
