@@ -24,7 +24,7 @@ function oop_entity_taxonomy_term_reference_field_formatter($value, $options, $f
 			if ( count($term_load_by_name) > 0 ) {
 				$term_keys = array_keys($term_load_by_name);
 
-				if (count($term_keys) > 1) {
+				if (count($term_keys) === 1) {
 					$ref_id = $term_keys;
 				} else {
 					$ref_id = array_shift($term_keys);

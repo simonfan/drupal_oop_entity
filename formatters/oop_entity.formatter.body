@@ -8,7 +8,7 @@
 /**
  * Implements hook_body_field_formatter
  */
-function oop_entity_body_field_formatter($value, $options = array()) {
+function oop_entity_text_with_summary_field_formatter($value, $options = array()) {
 	return oop_entity_body_formatter($value, $options);
 }
 
